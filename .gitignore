@@ -1,0 +1,7 @@
+*.log
+npm-debug.log*
+.env
+.npm
+.eslintcahe
+node_modules/
+.vscode/
