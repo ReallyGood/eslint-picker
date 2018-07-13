@@ -11,6 +11,10 @@ const LEVEL_VALUES = {
   off: 'Off 🙈'
 };
 
+const FIXABLE_VALUES = {
+  true: '🔧'
+};
+
 const RECOMMENDED_VALUES = {
   true: LEVEL_VALUES.error,
   false: LEVEL_VALUES.off
@@ -47,7 +51,7 @@ const getChildCategories = (config) => {
 getChildCategories(rootConfig);
 
 // csv schema
-const fields = ['category', 'rule', 'description', 'recommended', 'airbnb-level', 'airbnb-value'];
+const fields = ['category', 'rule', 'description', 'fixable', 'recommended', 'airbnb-level', 'airbnb-value'];
 // collect all rules + metadata here
 const allRules = [];
 
@@ -64,9 +68,10 @@ categories.forEach((category) => {
       category: titleCase(category.title).replace('Es6', 'ES6'),
       rule: getRuleTitle(id, { link: officialEntry.url || null }),
       description: officialEntry.description,
+      fixable: FIXABLE_VALUES[officialEntry.fixable] || '',
       recommended: RECOMMENDED_VALUES[officialEntry.recommended],
-      'airbnb-value': value,
-      'airbnb-level': LEVEL_VALUES[level]
+      'airbnb-level': LEVEL_VALUES[level],
+      'airbnb-value': value
     });
   });
 });
