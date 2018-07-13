@@ -1,20 +1,33 @@
+import eslintRules from './eslint-rules';
+
 const Json2csvParser = require('json2csv').Parser;
 const rootConfig = require('eslint-config-airbnb');
 
 const titleCase = slug => slug.replace(/\b\S/g, t => t.toUpperCase()).replace('-', ' ');
 
+const LEVEL_VALUES = {
+  error: 'Error ⛔',
+  warn: 'Warn ⚠️',
+  off: 'Off 🙈'
+};
+
+const RECOMMENDED_VALUES = {
+  true: LEVEL_VALUES.error,
+  false: LEVEL_VALUES.off
+};
+
 const categories = [];
 
-const getRuleTitle = (title, format = 'SPREADSHEET') => {
-  const googleLink = `https://www.google.com/search?q=eslint+rule+${title}&btnI`;
+const getRuleTitle = (title, options = {}) => {
+  const link = options.link ? options.link : `https://www.google.com/search?q=eslint+rule+${title}&btnI`;
   const TITLES = {
     BASIC: title,
-    MARKDOWN: `[${title}](${googleLink})`,
-    HTML: `<a href="${googleLink}">${title}</a>`,
-    SPREADSHEET: `=HYPERLINK("${googleLink}", "${title}")`,
+    MARKDOWN: `[${title}](${link})`,
+    HTML: `<a href="${link}">${title}</a>`,
+    SPREADSHEET: `=HYPERLINK("${link}", "${title}")`
   };
 
-  return TITLES[format];
+  return TITLES[options.format || 'SPREADSHEET'];
 };
 
 const getChildCategories = (config) => {
@@ -22,7 +35,7 @@ const getChildCategories = (config) => {
     const content = require(path);
     categories.push({
       title: path.slice(path.lastIndexOf('/') + 1).slice(0, -3),
-      content,
+      content
     });
 
     if (content.extends) {
@@ -34,7 +47,7 @@ const getChildCategories = (config) => {
 getChildCategories(rootConfig);
 
 // csv schema
-const fields = ['category', 'rule', 'airbnb-value', 'airbnb-level'];
+const fields = ['category', 'rule', 'description', 'recommended', 'airbnb-level', 'airbnb-value'];
 // collect all rules + metadata here
 const allRules = [];
 
@@ -42,11 +55,18 @@ const allRules = [];
 categories.forEach((category) => {
   const entries = Object.entries(category.content.rules);
   entries.forEach((entry) => {
+    const id = entry[0];
+    const value = entry[1];
+    const officialEntry = eslintRules[id] || {};
+    const level = Array.isArray(value) ? value[0] : value;
+
     allRules.push({
       category: titleCase(category.title).replace('Es6', 'ES6'),
-      rule: getRuleTitle(entry[0]),
-      'airbnb-value': entry[1],
-      'airbnb-level': Array.isArray(entry[1]) ? entry[1][0] : entry[1],
+      rule: getRuleTitle(id, { link: officialEntry.url || null }),
+      description: officialEntry.description,
+      recommended: RECOMMENDED_VALUES[officialEntry.recommended],
+      'airbnb-value': value,
+      'airbnb-level': LEVEL_VALUES[level]
     });
   });
 });
