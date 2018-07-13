@@ -5,6 +5,18 @@ const titleCase = slug => slug.replace(/\b\S/g, t => t.toUpperCase()).replace('-
 
 const categories = [];
 
+const getRuleTitle = (title, format = 'SPREADSHEET') => {
+  const googleLink = `https://www.google.com/search?q=eslint+rule+${title}&btnI`;
+  const TITLES = {
+    BASIC: title,
+    MARKDOWN: `[${title}](${googleLink})`,
+    HTML: `<a href="${googleLink}">${title}</a>`,
+    SPREADSHEET: `=HYPERLINK("${googleLink}", "${title}")`,
+  };
+
+  return TITLES[format];
+};
+
 const getChildCategories = (config) => {
   config.extends.forEach((path) => {
     const content = require(path);
@@ -32,9 +44,9 @@ categories.forEach((category) => {
   entries.forEach((entry) => {
     allRules.push({
       category: titleCase(category.title).replace('Es6', 'ES6'),
-      rule: `=HYPERLINK("https://www.google.com/search?q=eslint+rule+${entry[0]}&btnI", "${entry[0]}")`,
+      rule: getRuleTitle(entry[0]),
       'airbnb-value': entry[1],
-      'airbnb-level': Array.isArray(entry[1]) ? entry[1][0] : entry[1]
+      'airbnb-level': Array.isArray(entry[1]) ? entry[1][0] : entry[1],
     });
   });
 });
