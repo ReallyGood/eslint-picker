@@ -1,6 +1,6 @@
 {
   "name": "eslint-picker",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Helps pick eslint rules, reach consensus and generate a config file",
   "main": "airbnb.js",
   "scripts": {

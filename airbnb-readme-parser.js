@@ -34,13 +34,11 @@ const parseReadme = (README) => {
     const anchorStart = README.lastIndexOf('="', anchorEnd);
     const anchor = README.slice(anchorStart + 2, anchorEnd);
 
-    console.log('id', id, '|', anchor);
     parsed[id] = {
       anchor
     };
   });
 
-  console.log('indexes', indexes.length);
   return parsed;
 };
 
@@ -51,8 +49,4 @@ const getReadmeData = () => new Promise((resolve, reject) => {
   });
 });
 
-getReadmeData().then((result) => {
-  console.log('Got', result);
-});
-
-export default getReadme;
+export default getReadmeData;

@@ -1,10 +1,12 @@
 import eslintRules from './eslint-rules';
+import getAirbnbData from './airbnb-readme-parser';
 
 const Json2csvParser = require('json2csv').Parser;
 const rootConfig = require('eslint-config-airbnb');
 
 const titleCase = slug => slug.replace(/\b\S/g, t => t.toUpperCase()).replace('-', ' ');
 
+const AIRBNB_README_LINK = 'https://github.com/airbnb/javascript/blob/master/README.md#';
 const LEVEL_VALUES = {
   error: 'Error ⛔',
   warn: 'Warn ⚠️',
@@ -22,7 +24,7 @@ const RECOMMENDED_VALUES = {
 
 const categories = [];
 
-const getRuleTitle = (title, options = {}) => {
+const formatTitle = (title, options = {}) => {
   const link = options.link ? options.link : `https://www.google.com/search?q=eslint+rule+${title}&btnI`;
   const TITLES = {
     BASIC: title,
@@ -51,35 +53,41 @@ const getChildCategories = (config) => {
 getChildCategories(rootConfig);
 
 // csv schema
-const fields = ['category', 'rule', 'description', 'fixable', 'recommended', 'airbnb-level', 'airbnb-value'];
+const fields = ['category', 'airbnb-link', 'rule', 'description', 'fixable', 'recommended', 'airbnb-level', 'airbnb-value'];
 // collect all rules + metadata here
 const allRules = [];
 
-// run through all categories to collect rules
-categories.forEach((category) => {
-  const entries = Object.entries(category.content.rules);
-  entries.forEach((entry) => {
-    const id = entry[0];
-    const value = entry[1];
-    const officialEntry = eslintRules[id] || {};
-    const level = Array.isArray(value) ? value[0] : value;
+// async fetch & parse rules metadata out of airbnb js guide readme
+getAirbnbData().then((airbnbData) => {
+  // run through all categories to collect rules
+  categories.forEach((category) => {
+    const entries = Object.entries(category.content.rules);
+    entries.forEach((entry) => {
+      const id = entry[0];
+      const value = entry[1];
+      const hasOfficial = !!eslintRules[id];
+      const officialEntry = eslintRules[id] || {};
+      const level = Array.isArray(value) ? value[0] : value;
+      const airbnbAnchor = hasOfficial && airbnbData[id] && airbnbData[id].anchor;
+      const airbnbLink = airbnbAnchor ? formatTitle('💬', { link: AIRBNB_README_LINK + airbnbAnchor }) : null;
 
-    allRules.push({
-      category: titleCase(category.title).replace('Es6', 'ES6'),
-      rule: getRuleTitle(id, { link: officialEntry.url || null }),
-      description: officialEntry.description,
-      fixable: FIXABLE_VALUES[officialEntry.fixable] || '',
-      recommended: RECOMMENDED_VALUES[officialEntry.recommended],
-      'airbnb-level': LEVEL_VALUES[level],
-      'airbnb-value': value
+      allRules.push({
+        category: titleCase(category.title).replace('Es6', 'ES6'),
+        'airbnb-link': airbnbLink,
+        rule: formatTitle(id, { link: officialEntry.url || null }),
+        description: officialEntry.description,
+        fixable: FIXABLE_VALUES[officialEntry.fixable] || '',
+        recommended: RECOMMENDED_VALUES[officialEntry.recommended],
+        'airbnb-level': LEVEL_VALUES[level],
+        'airbnb-value': value
+      });
     });
   });
+
+  const json2csvParser = new Json2csvParser({ fields });
+  const csv = json2csvParser.parse(allRules);
+
+  // strip index line
+  const cleanCsv = csv.replace(/"Index".+[\n]/, '');
+  console.log(cleanCsv);
 });
-
-const json2csvParser = new Json2csvParser({ fields });
-const csv = json2csvParser.parse(allRules);
-
-// strip index line
-const cleanCsv = csv.replace(/"Index".+[\n]/, '');
-
-console.log(cleanCsv);
