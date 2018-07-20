@@ -1,10 +1,11 @@
 {
   "name": "eslint-picker",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Helps pick eslint rules, reach consensus and generate a config file",
   "main": "airbnb.js",
   "scripts": {
-    "build": "babel-node airbnb",
+    "prepare": "babel-node airbnb",
+    "generate": "babel-node generate-config",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
