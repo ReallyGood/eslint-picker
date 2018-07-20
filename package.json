@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^6.0.0",
     "eslint": "^5.1.0",
     "eslint-config-airbnb": "^17.0.0",
+    "google-spreadsheet": "^2.0.5",
     "json2csv": "^4.1.6",
     "lodash": "^4.17.10"
   },
