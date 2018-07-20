@@ -1,3 +1,4 @@
+import path from 'path';
 import fs from 'fs';
 import eslintRules from './eslint-rules';
 import getAirbnbData from './airbnb-readme-parser';
@@ -8,7 +9,7 @@ const rootConfig = require('eslint-config-airbnb');
 const titleCase = slug => slug.replace(/\b\S/g, t => t.toUpperCase()).replace('-', ' ');
 
 const AIRBNB_README_LINK = 'https://github.com/airbnb/javascript/blob/master/README.md#';
-const OUTPUT_CSV_PATH = `${process.cwd()}/airbnb.csv`;
+const OUTPUT_CSV_PATH = path.resolve(process.cwd(), 'downloads', 'airbnb.csv');
 
 const LEVEL_VALUES = {
   error: 'Error ⛔',
@@ -99,6 +100,6 @@ getAirbnbData().then((airbnbData) => {
       return console.log(err);
     }
 
-    console.log(`CSV saved to ${OUTPUT_CSV_PATH}`);
+    console.log(`Generated CSV at ${OUTPUT_CSV_PATH}`);
   });
 });

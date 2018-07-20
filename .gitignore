@@ -5,3 +5,4 @@ npm-debug.log*
 .eslintcahe
 node_modules/
 .vscode/
+downloads/.eslintrc.js
