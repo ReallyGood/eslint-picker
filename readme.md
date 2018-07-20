@@ -1,8 +1,10 @@
 ## ESlint Picker
-Did you think you could really just go with [airbnb js conventions](https://github.com/airbnb/javascript) and live with it?
+Did you really think you could just go with [airbnb js conventions](https://github.com/airbnb/javascript) and live with it?
 We did too! And we had too many qualms and disagreements with them and among ourselves, so things moved slow.
 
-This tool helps you reach team consensus regrading eslint by:
+This tool helps you reach team consensus regrading eslint.
+
+### Steps
 - run `npm run prepare` to generate a csv which is then (manually) imported into a google sheet
 - Ya'll go on and read about the rules, argue, do your homework and eventually fill in the Consensus column
 - run `SPREADSHEET_ID=<your sheet id> npm run generate` to get a .eslintrc.js file ready for your project
