@@ -1,3 +1,4 @@
+import fs from 'fs';
 import eslintRules from './eslint-rules';
 import getAirbnbData from './airbnb-readme-parser';
 
@@ -7,6 +8,8 @@ const rootConfig = require('eslint-config-airbnb');
 const titleCase = slug => slug.replace(/\b\S/g, t => t.toUpperCase()).replace('-', ' ');
 
 const AIRBNB_README_LINK = 'https://github.com/airbnb/javascript/blob/master/README.md#';
+const OUTPUT_CSV_PATH = `${process.cwd()}/airbnb.csv`;
+
 const LEVEL_VALUES = {
   error: 'Error ⛔',
   warn: 'Warn ⚠️',
@@ -89,5 +92,13 @@ getAirbnbData().then((airbnbData) => {
 
   // strip index line
   const cleanCsv = csv.replace(/"Index".+[\n]/, '');
-  console.log(cleanCsv);
+
+  // write csv to file
+  fs.writeFile(OUTPUT_CSV_PATH, cleanCsv, (err) => {
+    if (err) {
+      return console.log(err);
+    }
+
+    console.log(`CSV saved to ${OUTPUT_CSV_PATH}`);
+  });
 });
