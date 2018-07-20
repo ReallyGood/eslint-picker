@@ -1,5 +1,5 @@
 ## ESlint Picker
-Did you think you could really just go with airbnb js conventions and live with it?
+Did you think you could really just go with [airbnb js conventions](https://github.com/airbnb/javascript) and live with it?
 We did too! And we had too many qualms and disagreements with them and among ourselves, so things moved slow.
 
 This tool helps you reach team consensus regrading eslint by:
