@@ -32,7 +32,9 @@ const processRows = (err, rows) => {
   rows.forEach((row) => {
     const { rule, consensus, airbnbvalue } = row;
     if (consensus.trim() !== '' && consensus !== airbnbvalue) {
-      rules[rule] = consensus;
+      // we want js values, not JSON strings
+      const value = consensus[0] === '[' ? JSON.parse(consensus) : consensus;
+      rules[rule] = value;
     }
   });
 
