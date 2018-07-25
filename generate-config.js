@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { argv } from 'yargs';
 
 dotenv.config();
 
@@ -13,7 +14,9 @@ const RULES_TOKEN = '{/* RULES */}';
 const { SPREADSHEET_ID } = process.env;
 const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 const TEMPLATE_PATH = path.resolve(process.cwd(), '.eslintrc.template.js');
-const OUTPUT_CONFIG_PATH = path.resolve(process.cwd(), 'downloads', '.eslintrc.js');
+const DEFAULT_OUTPUT_PATH = path.resolve(process.cwd(), 'downloads', '.eslintrc.js');
+const OUTPUT_CONFIG_PATH = argv.config || DEFAULT_OUTPUT_PATH;
+console.log('argv', OUTPUT_CONFIG_PATH)
 
 const onInfo = (err, info) => {
   const [sheet] = info.worksheets;

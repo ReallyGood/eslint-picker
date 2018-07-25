@@ -16,7 +16,8 @@
     "eslint-config-airbnb": "^17.0.0",
     "google-spreadsheet": "^2.0.5",
     "json2csv": "^4.1.6",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "yargs": "^12.0.1"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
