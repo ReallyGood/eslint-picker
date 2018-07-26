@@ -20,6 +20,12 @@ const argv = require('yargs')
     describe: 'When passing config, merge will extend the existing rules with the new ones',
     string: true
   })
+  .env('ESLINT_PICKER')
+  .option('sheet', {
+    alias: ['SHEET', 's'],
+    describe: 'Google Sheet ID of your eslint-picker sheet',
+    string: true
+  })
   .hide('version')
   .help()
   .argv;
@@ -34,7 +40,7 @@ const MODULE_START_TOKEN = '/* MODULE START */';
 const FROM_MODULE_START_TILL_END = /\/\* MODULE START \*\/([\s\S]+)/gm;
 
 // spreadsheet id is the long id in the sheets URL. Pass as an env variable if it's a secret, or put here
-const { SPREADSHEET_ID } = process.env;
+const SPREADSHEET_ID = argv.sheet || process.env.ESLINT_PICKER_SHEET;
 const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 const TEMPLATE_PATH = path.resolve(process.cwd(), '.eslintrc.template.js');
 const HAS_CONFIG = typeof argv.config === 'string' && argv.config.length > 0;
