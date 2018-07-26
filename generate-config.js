@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { argv } from 'yargs';
+import { extend, defaults } from 'lodash';
 
 dotenv.config();
 
@@ -9,16 +10,20 @@ const GoogleSpreadsheet = require('google-spreadsheet');
 
 const SHEET_ID_TOKEN = '/* #SHEET_ID# */';
 const RULES_TOKEN = '{/* RULES */}';
-const MODULE_START_TOKEN = '/* MODULE START */';;
+const MODULE_START_TOKEN = '/* MODULE START */';
 const FROM_MODULE_START_TILL_END = /\/\* MODULE START \*\/([\s\S]+)/gm;
 
 // spreadsheet id is the long id in the sheets URL. Pass as an env variable if it's a secret, or put here
 const { SPREADSHEET_ID } = process.env;
 const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 const TEMPLATE_PATH = path.resolve(process.cwd(), '.eslintrc.template.js');
-const HAS_CONFIG = argv.config.length > 0;
+const HAS_CONFIG = typeof argv.config === 'string' && argv.config.length > 0;
 const DEFAULT_OUTPUT_PATH = path.resolve(process.cwd(), 'downloads', '.eslintrc.js');
 const OUTPUT_CONFIG_PATH = argv.config || DEFAULT_OUTPUT_PATH;
+
+if (argv.merge && !argv.config) {
+  console.warn('merge flags is on but no config path was provided');
+}
 
 const onInfo = (err, info) => {
   const [sheet] = info.worksheets;
@@ -54,12 +59,20 @@ const prepareConfig = (rules) => {
 
   if (HAS_CONFIG) {
     const configObject = require(argv.config);
-    configObject.rules = rules;
+    if (argv.merge) {
+      extend(configObject.rules, rules);
+    } else {
+      configObject.rules = rules;
+    }
+
     const module = JSON.stringify(configObject, null, 2);
     const moduleExpression = `module.exports = ${module};`;
     config = config
       .replace('Automatically', 'Rules automatically')
       .replace(FROM_MODULE_START_TILL_END, moduleExpression);
+    if (argv.merge) {
+      config = config.replace('generated', 'generated and merged');
+    }
   } else {
     config = config
       .replace(RULES_TOKEN, json)
