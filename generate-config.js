@@ -5,11 +5,23 @@ import { extend } from 'lodash';
 
 // Define the CLI API
 const argv = require('yargs')
-  .alias('c', 'config')
-  .describe('c', 'You may pass a path to an existing .eslintrc.js config file to be overwritten or extended (see --merge)')
-  .alias('m', 'merge')
-  .describe('m', 'When passing a config file, merge will extend the existing rules with the new ones')
-  .help('help')
+  .option('config', {
+    alias: 'c',
+    describe: 'An existing .eslintrc.js config file to start from (see --merge)'
+  })
+  .option('merge', {
+    alias: 'm',
+    describe: 'New rules will replace any existing rules your config may have',
+    boolean: true,
+    default: false
+  })
+  .option('output', {
+    alias: 'o',
+    describe: 'When passing config, merge will extend the existing rules with the new ones',
+    string: true
+  })
+  .hide('version')
+  .help()
   .argv;
 
 dotenv.config();
@@ -27,7 +39,7 @@ const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 const TEMPLATE_PATH = path.resolve(process.cwd(), '.eslintrc.template.js');
 const HAS_CONFIG = typeof argv.config === 'string' && argv.config.length > 0;
 const DEFAULT_OUTPUT_PATH = path.resolve(process.cwd(), 'downloads', '.eslintrc.js');
-const OUTPUT_CONFIG_PATH = argv.config || DEFAULT_OUTPUT_PATH;
+const OUTPUT_CONFIG_PATH = argv.output || argv.config || DEFAULT_OUTPUT_PATH;
 
 if (argv.merge && !argv.config) {
   console.warn('merge flags is on but no config path was provided');
