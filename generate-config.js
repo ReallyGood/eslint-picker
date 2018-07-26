@@ -1,8 +1,16 @@
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { argv } from 'yargs';
-import { extend, defaults } from 'lodash';
+import { extend } from 'lodash';
+
+// Define the CLI API
+const argv = require('yargs')
+  .alias('c', 'config')
+  .describe('c', 'You may pass a path to an existing .eslintrc.js config file to be overwritten or extended (see --merge)')
+  .alias('m', 'merge')
+  .describe('m', 'When passing a config file, merge will extend the existing rules with the new ones')
+  .help('help')
+  .argv;
 
 dotenv.config();
 
