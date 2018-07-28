@@ -22,13 +22,13 @@ const argv = require('yargs')
   })
   .env('ESLINT_PICKER')
   .option('sheet', {
-    alias: ['SHEET', 's'],
-    describe: 'Google Sheet ID of your eslint-picker sheet',
+    alias: ['s', 'SHEET'],
+    describe: 'Google Sheet ID of your eslint-picker sheet. Can be passed as the ESLINT_PICKER_SHEET env variable',
     string: true
   })
   .hide('version')
   .help()
-  .argv;
+  .argv; 
 
 dotenv.config();
 
